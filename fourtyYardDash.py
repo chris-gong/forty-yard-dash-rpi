@@ -1,70 +1,67 @@
-import RPi.GPIO as GPIO
+from multiprocessing import Process
 import time
 import threading
 import queue
-from gpiozero import LightSensor
+import time
+import board
+import busio
+import adafruit_ads1x15.ads1115 as ADS
+from adafruit_ads1x15.analog_in import AnalogIn
 from stopWatch import App
 
-global startingLinePin, finishLinePin, startingLdr, finishLdr, raceStarted, raceInProgress, raceFinished, stopWatch
-startingLinePin = 4 #pin away from the Pi
-finishLinePin = 17
-startingLdr = LightSensor(pin = startingLinePin, charge_time_limit = 0.1)
-finishLdr = LightSensor(pin = finishLinePin, charge_time_limit = 0.1)
+global startingChannel, finishingChannel, raceStarted, raceInProgress, raceFinished, stopWatch, startingThread, finishingThread
 raceStarted = False
 raceInProgress = False
 raceFinished = False
-GPIO.setmode(GPIO.BCM)
+i2c = busio.I2C(board.SCL, board.SDA)
+ads = ADS.ADS1115(i2c)
+startingChannel = AnalogIn(ads, ADS.P1)
+finishingChannel = AnalogIn(ads, ADS.P0)
 
 def startingLine():
-    global startingLinePin, finishLinePin, startingLdr, finishLdr, raceStarted, raceInProgress, raceFinished, stopWatch
+    global startingChannel, finishingChannel, raceStarted, raceInProgress, raceFinished, stopWatch, startingThread
     print("starting line function called")
     while(True):
-        print(startingLdr.value)
-        if(startingLdr.value < 0.85):
-            print("starting line laser beam broken")
-            stopWatch.reset()
+        #print("starting line " + str(raceInProgress) + " " + str(startingChannel.value))
+        if(not raceInProgress and int(startingChannel.value) > 1000):
+            print("starting line laser beam broken" + str(startingChannel.value))
+            #stopWatch.reset()
+            finishingThread = threading.Thread(target=finishLine)
+            finishingThread.start()
             stopWatch.start()
-            break
-    '''
-    while(True):
-        count = 0
-        GPIO.setup(startingLinePin, GPIO.OUT)
-        GPIO.output(startingLinePin, GPIO.LOW)
-        time.sleep(0.0001)
+            raceInProgress= True
+            
+            print("done")
+            #break
+            
 
-        GPIO.setup(startingLinePin, GPIO.IN)
-        
-        while(GPIO.input(startingLinePin) == GPIO.LOW and count < 1000):
-            count += 1
-
-        if(count >= 1000):
-            print("starting line laser beam broken")
-            stopWatch.reset()
-            stopWatch.start()
-            break
-    '''
     
 def finishLine():
-    global startingLinePin, finishLinePin, startingLdr, finishLdr, raceStarted, raceInProgress, raceFinished, stopWatch
+    global startingChannel, finishingChannel, raceStarted, raceInProgress, raceFinished, stopWatch, startingThread, finishingThread
     print("finish line function called")
     while(True):
-        print(finishLdr.value)
-        if(finishLdr.value < 0.75):
-            print("finish line laser beam broken")
+        #print("finish " + str(finishingChannel.value))
+        
+        if(int(finishingChannel.value) > 1800):
+            print("finish line laser beam broken " + str(int(finishingChannel.value)))
             stopWatch.stop()
+            raceInProgress = False
             break
+        
     
 def main():
-    global startingLinePin, finishLinePin, startingLdr, finishLdr, raceStarted, raceInProgress, raceFinished, stopWatch
+    global startingChannel, finishingChannel, raceStarted, raceInProgress, raceFinished, stopWatch, startingThread, finishingThread
     stopWatch = App()
     stopWatch.stop()
     print("main function called")
     
-    startThread = threading.Thread(target=startingLine)
-    finishThread = threading.Thread(target=finishLine)
     
-    startThread.start()
-    finishThread.start()
+    startingThread = threading.Thread(target=startingLine)
+            
+    
+    startingThread.start()
+    
+    
     
     stopWatch.root.mainloop()
 

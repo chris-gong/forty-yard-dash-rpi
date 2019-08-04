@@ -28,8 +28,11 @@ class App():
         
     def timer(self):
         global start_time
-        while(True): 
+        print("timer timer called")
+        while(True):
+            #print("running " + str(running))
             if(running):
+                #print("wut")
                 current_time = time.time() * 100
                 difference = current_time - start_time
                 s = int(difference / 100)
