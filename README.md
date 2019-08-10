@@ -3,4 +3,16 @@ Using a Raspberry Pi, phototransistors, and laser diodes, my friends and I were 
 
 ## Schematic and setup
 
+### Materials Used
+* Raspberry Pi (Quantity: 1)
+* Phototransistors (Quantity: 2)
+* Laser diodes (Quantity: 2)
+* Battery holders (Quantity: 2)
+* AA batteries (Quantity: 6)
+* 10k ohm resistors (Quantity: 2)
+* Analog-to-Digital Convertor (Quantity: 1)
+* Breadboards (Quantity: 2)
+* Breadboard wires (Quantity: A lot)
+
+## Running the code
 
