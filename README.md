@@ -16,3 +16,4 @@ Using a Raspberry Pi, phototransistors, and laser diodes, my friends and I were 
 
 ## Running the code
 
+### Required dependencies
