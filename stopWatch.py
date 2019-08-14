@@ -9,12 +9,12 @@ class App():
     def reset(self):
         global start_time, running
         running = False
-        self.t.set("00:00")
+        self.time.set("00.00")
         
     def start(self):
         global start_time, running
         print("timer started")
-        start_time = time.time() * 100
+        start_time = time.time()
         running = True
         self.start_timer()
         
@@ -28,27 +28,22 @@ class App():
         
     def timer(self):
         global start_time
-        print("timer timer called")
+        print("timer timer function called")
         while(True):
-            #print("running " + str(running))
             if(running):
-                #print("wut")
-                current_time = time.time() * 100
+                current_time = time.time()
                 difference = current_time - start_time
-                s = int(difference / 100)
-                cs = int(difference % 100)
-                self.d = str(s) + ":" + str(cs)
                 
-                self.t.set(self.d)
+                self.time.set(“{:.2f}”. format(difference))
                 
     def __init__(self):
         self.root = Tk()
         self.root.title("Stop Watch")
         self.root.geometry("1920x1080")
         self.root.resizable(False, False)
-        self.t = StringVar()
-        self.t.set("00:00")
-        self.lb = Label(self.root, textvariable = self.t)
+        self.time = StringVar()
+        self.time.set("00.00")
+        self.lb = Label(self.root, textvariable = self.time)
         self.lb.config(font=("Courier 425 bold"))
         self.lb.pack(side="top")
         
