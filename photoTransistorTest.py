@@ -11,5 +11,5 @@ ads = ADS.ADS1115(i2c)
 channel = AnalogIn(ads, ADS.P0)
 
 while True:
-    #print("{:>5}\t{:>5.3f}".format(channel.value, channel.voltage))
-    print(channel.value)
+    print("Value: {}      Voltage: {}".format(channel.value, channel.voltage))
+    time.sleep(1)
